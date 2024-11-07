@@ -1,0 +1,43 @@
+db.students.insertMany([
+    { "id": 1, "sec": "A", "marks": 80 },
+    { "id": 2, "sec": "A", "marks": 90 },
+    { "id": 1, "sec": "B", "marks": 99 },
+    { "id": 1, "sec": "B", "marks": 95 },
+    { "id": 1, "sec": "C", "marks": 90 }
+]);
+
+var map = function() {
+    emit(this.sec, this.marks);
+};
+
+var reduce = function(key, values) {
+    return Array.max(values);
+};
+
+db.students.mapReduce(
+    map,
+    reduce,
+    { out: "max_marks_by_section" }
+);
+db.max_marks_by_section.find().pretty();
+
+var map = function() { emit(this.age, this.rank); };
+var reduce = function(key, values) { return Array.sum(values); };
+
+db.employee.mapReduce(map, reduce, { out: "sum_rank_by_age" });
+
+
+//if mapreduce not working------------------------
+
+// var reduceFunction = function(sec, marks) {
+//          // Manually find the maximum value in the marks array
+//          return marks.reduce((max, current) => (current > max ? current : max), marks[0]);
+// };
+
+//     db.students.mapReduce(
+//              mapFunction,
+//              reduceFunction,
+//              { out: "maxMarksBySection" }
+// );
+
+// db.maxMarksBySection.find().pretty();
